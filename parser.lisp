@@ -22,7 +22,7 @@
 
 (defun make-xml-parser (&optional (default-handler #'ignore-element))
   (cons (make-hash-table :test #'equal)
-	default-handler))
+        default-handler))
 
 
 (defun ignore-element (tree &rest args)
@@ -31,15 +31,15 @@
 
 
 (defmacro def-element-handler (element-name
-			       (xml-tree-name &rest args)
-			       (xml-parser)
-			       &body handler-code)
+                               (xml-tree-name &rest args)
+                               (xml-parser)
+                               &body handler-code)
   `(setf (gethash ,element-name (car ,xml-parser))
     (let ((xml-parser ,xml-parser))
       (declare (ignorable xml-parser))
       (lambda (,xml-tree-name ,@args state)
-	(declare (ignorable ,xml-tree-name state ,@args))
-	,@handler-code))))
+        (declare (ignorable ,xml-tree-name state ,@args))
+        ,@handler-code))))
 
 
 (defmacro with-state ((state-key state-value) &body body)
@@ -49,7 +49,7 @@
 
 (defmacro with-parser (xml-parser &body body)
   `(let ((state nil)
-	 (xml-parser ,xml-parser))
+         (xml-parser ,xml-parser))
     ,@body))
     
 
@@ -57,26 +57,26 @@
   `(if (null ,tree)
     nil
     (funcall (gethash (node-name ,tree) (car xml-parser)
-	      (cdr xml-parser))
+              (cdr xml-parser))
      ,tree ,@args state)))
 
 
 (defun %compress-whitespace (string)
   (let ((out-stream (make-string-output-stream))
-	(in-whitespace-p nil))
+        (in-whitespace-p nil))
     (do ((i 0 (1+ i)))
-	((>= i (length string))
-	 (get-output-stream-string out-stream))
+        ((>= i (length string))
+         (get-output-stream-string out-stream))
       (let ((c (char string i)))
-	(cond
-	  ((member c xmls::*whitespace*)
-	   (unless in-whitespace-p
-	     (princ #\space out-stream)
-	     (setf in-whitespace-p t)))
-	  (t
-	   (princ c out-stream)
-	   (when in-whitespace-p
-	     (setf in-whitespace-p nil))))))))
+        (cond
+          ((member c xmls::*whitespace*)
+           (unless in-whitespace-p
+             (princ #\space out-stream)
+             (setf in-whitespace-p t)))
+          (t
+           (princ c out-stream)
+           (when in-whitespace-p
+             (setf in-whitespace-p nil))))))))
 
 
 (defmacro compress-whitespace (string)
@@ -87,16 +87,16 @@
 
 (defmacro with-indent (stream &body body)
   `(let* ((old-stream ,stream)
-	  (,stream (make-string-output-stream)))
+          (,stream (make-string-output-stream)))
     ,@body
     ;; print line by line with single-space indents on front
     (princ #\space old-stream)
     (do ((string (get-output-stream-string ,stream))
-	 (i 0 (1+ i)))
-	((>= i (length string)))
+         (i 0 (1+ i)))
+        ((>= i (length string)))
       (let ((c (char string i)))
-	(princ c old-stream)
-	(when (and (char= c #\newline)
-		   (< i (1- (length string))))
-	  (princ #\space old-stream))))))
+        (princ c old-stream)
+        (when (and (char= c #\newline)
+                   (< i (1- (length string))))
+          (princ #\space old-stream))))))
 

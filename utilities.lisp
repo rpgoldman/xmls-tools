@@ -37,8 +37,8 @@ from 0)
 For example, to find the second c element in the following XMLS tree:
 (\"a\" NIL
        ((\"b\" . \"foo\") NIL
-	((\"c\" . \"foo\") NIL \"Hello\")
-	((\"c\" . \"foo\") NIL \"World\")))
+        ((\"c\" . \"foo\") NIL \"Hello\")
+        ((\"c\" . \"foo\") NIL \"World\")))
 
 The following PATH-SPEC could be used:
 ((\"b\" . \"foo\") ((\"c\" . \"foo\") 1))
@@ -53,61 +53,61 @@ following is equally permissible:
                                            (caar path-spec)
                                          (car path-spec))
                               :skip-matches (let ((it (spec-enumeration
-						       (car path-spec))))
-					      (if it
-						  it
-						  0)))
-		  (rest path-spec))))
+                                                       (car path-spec))))
+                                              (if it
+                                                  it
+                                                  0)))
+                  (rest path-spec))))
 
 
 (defun spec-enumeration (spec)
   (and (listp spec)
        (or (and (integerp (cdr spec)) (cdr spec))
-	   (and (listp (cdr spec))
-		(integerp (cadr spec))
-		(cadr spec)))))
+           (and (listp (cdr spec))
+                (integerp (cadr spec))
+                (cadr spec)))))
 
 
 (defun find-child (xml-tree child-name &key (skip-matches 0) (skip-children 0)
-		   child-namespace)
+                   child-namespace)
   (let ((child-position 0)
-	(match-position 0))
+        (match-position 0))
     (dolist (child (nthcdr skip-children (node-children xml-tree)))
-      (when (and (listp child)
-		 (equal child-name (node-name child))
-		 (or (null child-namespace)
-		     (equal child-namespace (node-ns child))))
-	(incf match-position)
-	(when (> match-position skip-matches)
-	  (return-from find-child (values child child-position))))
+      (when (and (node-p child)
+                 (equal child-name (node-name child))
+                 (or (null child-namespace)
+                     (equal child-namespace (node-ns child))))
+        (incf match-position)
+        (when (> match-position skip-matches)
+          (return-from find-child (values child child-position))))
       (incf child-position))))
 
 
 (defun find-all-children (xml-tree child-name &key child-namespace)
   (do* ((i 0 (1+ i))
         (children (list (find-child xml-tree child-name 
-				    :child-namespace child-namespace))
+                                    :child-namespace child-namespace))
                   (cons (find-child xml-tree child-name :skip-matches i
-				    :child-namespace child-namespace)
+                                    :child-namespace child-namespace)
                         children)))
        ((null (first children))
-	(nreverse (rest children)))))
+        (nreverse (rest children)))))
 
 
 (defun search-children (element-name xml-children)
   (if (null xml-children)
       nil
-      (if (and (listp (car xml-children))
-	       (equal (node-name (car xml-children)) element-name))
-	  (car xml-children)
-	  (search-children element-name (cdr xml-children)))))
+      (if (and (node-p (car xml-children))
+               (equal (node-name (car xml-children)) element-name))
+          (car xml-children)
+          (search-children element-name (cdr xml-children)))))
 
 
 (defun get-pcdata (xml-children &optional (out-string ""))
   (if (null xml-children)
       out-string
       (if (stringp (first xml-children))
-	  (get-pcdata (rest xml-children)
-		      (format nil "~A~A" out-string 
-			      (remove #\return (first xml-children))))
-	  (get-pcdata (cdr xml-children) out-string))))
+          (get-pcdata (rest xml-children)
+                      (format nil "~A~A" out-string 
+                              (remove #\return (first xml-children))))
+          (get-pcdata (cdr xml-children) out-string))))

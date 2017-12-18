@@ -24,14 +24,14 @@
 
 (defsystem "xmls-tools"
   :name "xmls-tools"
-  :version "0.2.0"
+  :version "0.3.0"
   :author "Robert Marlow <bobstopper@bobturf.org>"
-  :maintainer "Robert Marlow <bobstopper@bobturf.org>"
-  :depends-on (:xmls)
+  :maintainer "Robert Marlow <bobstopper@bobturf.org>; updates from Robert P. Goldman"
+  :depends-on ((:version :xmls "3.0.2"))
   :serial t
   :components ((:file "package")
-	       (:file "utilities")
-	       (:file "xmls-valid")
-	       (:file "parser")
-	       (:file "xhtml2text")))
+               (:file "utilities")
+               (:file "xmls-valid")
+               (:file "parser")
+               (:file "xhtml2text")))
 
