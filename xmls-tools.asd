@@ -27,6 +27,7 @@
   :version "0.3.0"
   :author "Robert Marlow <bobstopper@bobturf.org>"
   :maintainer "Robert Marlow <bobstopper@bobturf.org>; updates from Robert P. Goldman"
+  :license "GNU Library General Public License"
   :depends-on ((:version :xmls "3.0.2"))
   :serial t
   :components ((:file "package")
